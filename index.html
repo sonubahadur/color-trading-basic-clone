@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Color Prediction Game</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      color: #333;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #4b0082;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      margin: 10px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .red { background: #e74c3c; color: white; }
+    .green { background: #27ae60; color: white; }
+    .violet { background: #8e44ad; color: white; }
+
+    .red:hover { background: #c0392b; }
+    .green:hover { background: #1e8449; }
+    .violet:hover { background: #6c3483; }
+
+    #result, #timer, #score {
+      margin-top: 30px;
+      font-size: 20px;
+    }
+
+    #bet-input {
+      padding: 10px;
+      font-size: 16px;
+      width: 80px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎮 Real-Feel Color Prediction Game</h1>
+
+  <div id="score">Your Coins: 💰 <span id="coins">1000</span></div>
+
+  <p>Select your bet amount:</p>
+  <input id="bet-input" type="number" min="10" max="1000" value="100">
+
+  <p>Choose your color before timer ends:</p>
+
+  <button class="btn red" onclick="placeBet('Red')">🔴 Red</button>
+  <button class="btn green" onclick="placeBet('Green')">🟢 Green</button>
+  <button class="btn violet" onclick="placeBet('Violet')">🟣 Violet</button>
+
+  <div id="timer">Next Round in: ⏳ <span id="time">10</span>s</div>
+  <div id="result"></div>
+
+  <script>
+    let countdown = 10;
+    let coins = 1000;
+    let selectedColor = null;
+    let betAmount = 100;
+
+    const resultDiv = document.getElementById("result");
+    const coinsDisplay = document.getElementById("coins");
+    const timeDisplay = document.getElementById("time");
+    const betInput = document.getElementById("bet-input");
+
+    function placeBet(color) {
+      betAmount = parseInt(betInput.value);
+      if (betAmount > coins) {
+        alert("❌ You don’t have enough coins!");
+        return;
+      }
+      selectedColor = color;
+      resultDiv.innerHTML = `You chose: <b>${color}</b> | Bet: 💸 ${betAmount}`;
+    }
+
+    function getWinningColor(num) {
+      if (num === 0 || num === 5) return "Violet";
+      else if (num % 2 === 0) return "Green";
+      else return "Red";
+    }
+
+    function runGameRound() {
+      if (!selectedColor) {
+        resultDiv.innerHTML = "⏳ No bet placed. You missed this round!";
+        return;
+      }
+
+      const number = Math.floor(Math.random() * 10);
+      const winningColor = getWinningColor(number);
+
+      let win = false;
+      if (selectedColor === winningColor || (winningColor === "Violet" && (selectedColor === "Red" || selectedColor === "Green"))) {
+        win = true;
+      }
+
+      if (win) {
+        coins += betAmount;
+        resultDiv.innerHTML = `🎯 Number: ${number} | Winning: ${winningColor} <br><span style='color:green;'>✅ You WON ₹${betAmount}!</span>`;
+      } else {
+        coins -= betAmount;
+        resultDiv.innerHTML = `🎯 Number: ${number} | Winning: ${winningColor} <br><span style='color:red;'>❌ You LOST ₹${betAmount}!</span>`;
+      }
+
+      coinsDisplay.innerText = coins;
+      selectedColor = null;
+    }
+
+    // Countdown Loop
+    setInterval(() => {
+      countdown--;
+      if (countdown === 0) {
+        runGameRound();
+        countdown = 10;
+      }
+      timeDisplay.innerText = countdown;
+    }, 1000);
+  </script>
+
+</body>
+</html>
